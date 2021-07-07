@@ -10,7 +10,7 @@
 
 /*************************************************************
 Function    :Sys_Ini_Analysis_GetSectionName系统解析函数--节名
-Description :使用系统解析函数导出配置文件包含的节数和节名
+Description :使用系统解析函数导出配置文件包含的节
 Input       :配置文件路径
 Output      :输出指定配置文件里的所有节名
 Return      :空
@@ -47,7 +47,7 @@ void Sys_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 
 /*********************************************************************
 Function    :Sys_Ini_Analysis_GetSection系统解析函数--节包含的键名键值
-Description :使用系统解析函数导出配置文件包含的节数和节名
+Description :使用系统解析函数导出配置文件包指定节名下的所有键名键值
 Input       :节名、文件路径
 Output      :输出指定配置文件里的指定节名下的所有键名键值
 Return      :空

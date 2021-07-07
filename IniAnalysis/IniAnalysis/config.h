@@ -12,8 +12,13 @@ using namespace std;
 #include <iostream>
 #include <windows.h>
 #include <string.h>
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 /************************************宏常量****************************************/
-#define FILEPATH  "../../fengboyu.ini"
+#define FILEPATH  "../../fengboyu.ini"  //定义文件路径为宏
+#define LINEMAXSIZE 100  //定义ini文件字符串长度为宏
 
 #endif /*_CONFIG_H_*/
