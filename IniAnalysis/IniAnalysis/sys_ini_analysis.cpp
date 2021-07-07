@@ -33,7 +33,7 @@ void Sys_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 	int m = 0;
 	for (i = 0; i <= sectionNameByteNum; i++)//循环得到Section节名
 	{
-		if (sectionNamesBuffer[i] != 0 && sectionNamesBuffer[i + 1] == 0)//判断Section节名位置
+		if (sectionNamesBuffer[i] != '\0' && sectionNamesBuffer[i + 1] == '\0')//判断Section节名位置
 		{
 			for (m = pos; m <= i; m++)
 			{
@@ -69,7 +69,7 @@ void Sys_Ini_Analysis_GetSection(LPCTSTR sectionName, LPCTSTR filePath)
 	int m = 0;
 	for (i = 0; i <= key_ValuebyteNum; i++)//循环得到Section节名
 	{
-		if (keyValueBuffer[i] != 0 && keyValueBuffer[i + 1] == 0)//判断key=value的位置
+		if (keyValueBuffer[i] != '\0' && keyValueBuffer[i + 1] == '\0')//判断key=value的位置
 		{
 			for (m = pos; m <= i; m++)
 			{
