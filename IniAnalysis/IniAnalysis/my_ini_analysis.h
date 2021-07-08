@@ -15,16 +15,8 @@ void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath);
 
 void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath);
 
-void My_Ini_Analysis_GetString(LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
+void My_Ini_Analysis_GetString(char *sectionName, char *keyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
 
-void My_Ini_Analysis_GetInt(LPCTSTR sectionName, LPCTSTR keyName, int valueDefault, int *intBuffer, LPCTSTR filePath);
-
-bool Judge_File_Status(FILE *file);
-
-void RemoveCh(char *arrP);
-
-void Find_File_Section(char *arrP);
-
-void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex);
+void My_Ini_Analysis_GetInt(char *sectionName, char *keyName, int valueDefault, int *intBuffer, LPCTSTR filePath);
 
 #endif /*_MY_INI_ANALYSIS_H_*/

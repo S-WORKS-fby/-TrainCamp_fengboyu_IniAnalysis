@@ -9,14 +9,6 @@
 #include "config.h"
 #include "my_ini_analysis.h"
 
-/***********************************函数声明**************************************/
-bool Judge_File_Status(FILE *file);
-
-void RemoveCh(char *arrP);
-
-void Find_File_Section(char *arrP);
-
-void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex);
 
 /***********************************函数定义**************************************/
 /*************************************************************
@@ -53,7 +45,7 @@ Note        :
 *************************************************************/
 void RemoveCh(char *arrP)
 {
-	char *arrPAction = arrP; 
+	char *arrPAction = arrP;
 
 	while ((*arrPAction != ';') && (*arrPAction != '\n'))
 	{
@@ -119,52 +111,53 @@ Output      :判断指针
 Return      :空
 Note        :
 *************************************************************/
-void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
+void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex)
 {
 	char *pos = arrP; //初始化遍历指针
 
-	if (*pos != '[')
+	if (*pos == '[')
+	{
+		while (*pos != '\n')
+		{
+			if (*pos == ']') //如果能找到右括号，则找到了节，判断节名是否匹配，信息看*index的值
+			{
+				if (*opIndex == 0) //之前未找到节名
+				{
+					char sectionBuffer[LINEMAXSIZE]; //初始化存储当前行截取的节名
+					strncpy(sectionBuffer, arrP, (pos - arrP + 1)); //截取
+					sectionBuffer[(pos - arrP + 1)] = '\0';
+
+					cout << "比对节名：" << secP << arrP << endl;
+
+					if (!strcmp(sectionBuffer, secP)) //判断当前节和寻找节名是否相等
+					{
+						*stIndex = 1;
+						*opIndex = 1;
+						cout << "节名匹配" << endl << endl;
+						break;
+					}
+					else
+					{
+						*stIndex = 0;
+						cout << "节名不匹配" << endl << endl;
+						break;
+					}
+				}
+				else //若之前已经找到节名，再次碰到节名则停止输出
+				{
+					*stIndex = 0;
+					*opIndex = 0;
+					cout << "键名键值输出完毕！" << endl;
+					break;
+				}
+			}/*if (*pos == ']')*/
+			pos++;
+		}/*while (*pos != '\n')*/
+	}/*if (*pos == '[')*//*if执行完毕，若*index为默认值2，则该字符串不是节，若为1说明节名匹配，若为0说明不匹配*/
+	else
 	{
 		*stIndex = 2;
-		return;
-	}/*if (*pos != '[')*//*if执行完毕，若*index为默认值2，则该字符串不是节，若为1说明节名匹配，若为0说明不匹配*/
-
-	while (*pos != '\n')
-	{
-		if (*pos != ']')
-		{
-			pos++;
-			continue;
-		}
-
-		if (*opIndex != 0)//若之前已经找到节名，再次碰到节名则停止输出
-		{
-			*stIndex = 0;
-			*opIndex = 0;
-			cout << "键名键值输出完毕！" << endl;
-			break;
-		}
-
-		char sectionBuffer[LINEMAXSIZE]; //初始化存储当前行截取的节名
-		strncpy(sectionBuffer, arrP, (pos - arrP + 1)); //截取
-		sectionBuffer[(pos - arrP + 1)] = '\0';
-
-		cout << "比对节名：" << secP << arrP << endl;
-
-		if (!strcmp(sectionBuffer, secP)) //判断当前节和寻找节名是否相等
-		{
-			*stIndex = 1;
-			*opIndex = 1;
-			cout << "节名匹配" << endl << endl;
-			break;
-		}
-		else
-		{
-			*stIndex = 0;
-			cout << "节名不匹配" << endl << endl;
-			break;
-		}
-	}/*while (*pos != '\n')*/
+	}
 }
 
 /*************************************************************
@@ -174,11 +167,11 @@ Input       :配置文件路径
 Output      :输出指定配置文件里的所有节名
 Return      :空
 Note        :
-*************************************************************/ 
+*************************************************************/
 void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
-	iniFile = fopen(filePath, "r");	
+	iniFile = fopen(filePath, "r");
 	static char intLineBuffer[LINEMAXSIZE] = { 0 }; //初始化存储ini文件单行字符的字符数组
 	bool JFS = TRUE; //记录文件打开情况,初始化为TRUE（正常）
 
@@ -223,7 +216,21 @@ void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
 	{
 		RemoveCh(intLineBuffer); //处理当前字符串，移除空格
 
-		if (outputIndex != 1) //未匹配过字节，继续匹配
+		if (outputIndex == 1) //即已经匹配过节名，目前是输出键名键值状态
+		{
+			Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+
+			if (sectionIndex == 2) //当前不是节名
+			{
+				cout << intLineBuffer << endl;
+			}
+			else
+			{
+				fclose(iniFile); //关闭文件
+				break; //结束文件查找
+			}
+		}
+		else
 		{
 			Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
@@ -232,34 +239,7 @@ void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
 				cout << "找到匹配的节名:" << intLineBuffer << endl;
 				cout << "其中的键名和键值是:" << endl;
 			}
-			continue;
-		}
-
-		//已经匹配过节名，目前是输出键名键值状态
-		Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
-
-		if (sectionIndex == 2) //当前不是节名
-		{
-			cout << intLineBuffer << endl;
-		}
-		else
-		{
-			fclose(iniFile); //关闭文件
-			break; //结束文件查找
 		}
 	}/*while*/
 	cout << endl;
-}
-
-/*************************************************************************
-Function    :My_Ini_Analysis_GetString自编解析函数--找出指定节指定键名的值
-Description :使用自编解析函数导出配置文件指定节中指定键名的键值
-Input       :节名、键名、默认值、缓冲区、缓冲区大小、文件路径
-Output      :输出指定配置文件里的指定节名下指定键名的键值
-Return      :空
-Note        :
-**************************************************************************/
-void My_Ini_Analysis_GetString(char *sectionName, char *keyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
-{
-
 }
