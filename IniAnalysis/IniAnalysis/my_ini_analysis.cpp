@@ -89,25 +89,18 @@ void Find_File_Section(char *arrP)
 		{
 			if (*pos == ']') //如果能找到右括号，那么输出中间的节
 			{
-				vector<char> SectionBuffer; //声明存储节名的容器
-
 				++arrP;
 				while (arrP != pos)
 				{
-					SectionBuffer.push_back(*arrP);  //将读取的节名存入容器
-					arrP++;
-				}
-
-				for (int i = 0; i < SectionBuffer.size(); i++) //循环输出节名字符
-				{
-					cout << SectionBuffer[i];
+					cout << *arrP;
+					++arrP;
 				}
 				cout << endl;
 				break;  //输出节后跳出当前查找循环
 			}
 			pos++;
-		}
-	}
+		}/*while (*pos != '\n')*/
+	}/*if (*pos == '[')*/
 }
 
 /*************************************************************
@@ -121,7 +114,6 @@ Note        :
 void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
 {
 	char *pos = arrP; //初始化遍历指针
-
 
 	if (*pos == '[') 
 	{
@@ -209,16 +201,15 @@ void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
 	char intLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
 	char TargetSection[LINEMAXSIZE]; //初始化存储转化成规范节名的指定节名
 	int sectionIndex = 2; //初始化寻找状态标志，2是默认值，1是节名匹配，0是不匹配
-	int outputIndex = 0; //初始化输出标志，0是默认值，0是不输出，1是输出
+	int outputIndex = 0; //初始化输出标志，0是默认值，0是之前未找到节名，1是之前已经匹配到节名
 
 	bool JFS = TRUE; //记录文件打开情况,初始化为TRUE（正常）
+	JFS = Judge_File_Status(iniFile); //判断文件打开状态
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 
 	cout << endl << "想要查找的节名：" << targetSection;
 	cout << endl << "标准化后的节名：" << TargetSection << endl;
-
-	JFS = Judge_File_Status(iniFile); //判断文件打开状态
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
 	while (JFS && fgets(intLineBuffer, LINEMAXSIZE, iniFile))
