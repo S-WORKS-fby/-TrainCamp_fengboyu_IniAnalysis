@@ -117,7 +117,7 @@ void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
 
 	if (*pos == '[') 
 	{
-		while (*pos != '\n')  //只有在默认状态下才会查找右括号
+		while (*pos != '\n') 
 		{
 			if (*pos == ']') //如果能找到右括号，则找到了节，判断节名是否匹配，信息看*index的值
 			{
