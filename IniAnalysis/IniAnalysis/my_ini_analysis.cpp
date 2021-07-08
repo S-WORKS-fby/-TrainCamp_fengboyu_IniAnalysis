@@ -14,6 +14,8 @@ bool Judge_File_Status(FILE *file);
 
 void RemoveCh(char *arrP);
 
+char* FindEqual(char *arrP);
+
 void Find_File_Section(char *arrP);
 
 void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex);
@@ -80,6 +82,29 @@ void RemoveCh(char *arrP)
 }
 
 /*************************************************************
+Function    :FindEqual
+Description :找到键名键值类型语句里的等号位置
+Input       :字符串指针
+Output      :空
+Return      :指向等号的指针
+Note        :
+*************************************************************/
+char* FindEqual(char *arrP)
+{
+	char *equalP = arrP; 
+
+	while (*equalP != '\n')
+	{
+		if (*equalP == '=')
+		{
+			return equalP;
+		}
+		equalP++;
+	}
+}
+
+
+/*************************************************************
 Function    ::Find_File_Section
 Description :找出配置文件的节名
 Input       :字符数组指针
@@ -141,7 +166,7 @@ void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
 		{
 			*stIndex = 0;
 			*opIndex = 0;
-			cout << "键名键值输出完毕！" << endl;
+			cout << endl;
 			break;
 		}
 
@@ -230,7 +255,7 @@ void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
 			if (sectionIndex == 1)
 			{
 				cout << "找到匹配的节名:" << intLineBuffer << endl;
-				cout << "其中的键名和键值是:" << endl;
+				cout << "要找的键名和键值是:" << endl;
 			}
 			continue;
 		}
@@ -259,7 +284,79 @@ Output      :输出指定配置文件里的指定节名下指定键名的键值
 Return      :空
 Note        :
 **************************************************************************/
-void My_Ini_Analysis_GetString(char *sectionName, char *keyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
+void My_Ini_Analysis_GetString(char *targetSection, char *targetKeyName, char *valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
 {
+	FILE *iniFile; //初始化文件指针
+	iniFile = fopen(filePath, "r");
+	char intLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
+	char TargetSection[LINEMAXSIZE]; //初始化存储转化成规范节名的指定节名
+	int sectionIndex = 2; //初始化寻找状态标志，2是默认值，1是节名匹配，0是不匹配
+	int outputIndex = 0; //初始化输出标志，0是默认值，0是之前未找到节名，1是之前已经匹配到节名
+	int keyFindIndex = 0; // 初始化键名查找状态标志，0是默认值，0是未找到键名，1是已找到
 
+	bool JFS = FALSE; //记录文件打开情况,初始化为FALSE（关闭）
+	JFS = Judge_File_Status(iniFile); //判断文件打开状态
+
+	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
+
+	cout << endl << "想要查找的节名：" << targetSection;
+	cout << endl << "标准化后的节名：" << TargetSection << endl;
+
+	//按行读取文件流中的字符串，读取不为空则进行后续操作
+	while (JFS && fgets(intLineBuffer, LINEMAXSIZE, iniFile))
+	{
+		RemoveCh(intLineBuffer); //处理当前字符串，移除空格
+
+		if (outputIndex != 1) //未匹配过字节，继续匹配
+		{
+			Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+
+			if (sectionIndex == 1)
+			{
+				cout << "找到匹配的节名:" << intLineBuffer << endl;
+			}
+			continue;
+		}
+
+		//已经匹配过节名，目前是输出键名键值状态
+		Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+
+		if (sectionIndex == 2) //当前不是节名,查找键值
+		{
+			char *keyEqualP = FindEqual(intLineBuffer);  //得到当前键名键值型字符串中指向等号的指针
+			
+			char KeyNameBuffer[LINEMAXSIZE]; //初始化存储当前键名的缓冲区
+			strncpy(KeyNameBuffer, intLineBuffer, (keyEqualP - intLineBuffer)); //将等号之前的键名字符串截取赋值到缓冲区
+			KeyNameBuffer[(keyEqualP - intLineBuffer)] = '\0';
+
+			if (!strcmp(KeyNameBuffer,targetKeyName))
+			{
+				++keyEqualP;
+
+				//将等号后的字符赋值到键值缓存区
+				for (int i = 0; i <= (strlen(keyEqualP) - 1); i++)
+				{
+					stringBuffer[i] = keyEqualP[i];
+
+				}
+				stringBuffer[strlen(keyEqualP)] = '\0';
+
+				break;
+			}
+		}
+		else
+		{
+			//将默认字符串赋值到键值缓存区
+			for (int i = 0; i <= (strlen(valueDefault) - 1); i++)
+			{
+				stringBuffer[i] = valueDefault[i];
+			}
+			stringBuffer[strlen(valueDefault)] = '\0';
+
+			cout << "找不到该键名！采取默认";
+			fclose(iniFile); //关闭文件
+			break; //结束文件查找
+		}
+	}/*while*/
+	cout << endl;
 }

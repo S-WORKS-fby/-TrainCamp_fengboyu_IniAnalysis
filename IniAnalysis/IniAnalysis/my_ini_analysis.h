@@ -15,7 +15,7 @@ void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath);
 
 void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath);
 
-void My_Ini_Analysis_GetString(char *sectionName, char *keyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
+void My_Ini_Analysis_GetString(char *targetSection, char *targetKeyName, char *valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
 
 void My_Ini_Analysis_GetInt(char *sectionName, char *keyName, int valueDefault, int *intBuffer, LPCTSTR filePath);
 
