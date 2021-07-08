@@ -13,7 +13,7 @@
 /************************************** 全局函数声明 *************************************/
 void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath);
 
-void My_Ini_Analysis_GetSection(LPCTSTR sectionName, LPCTSTR filePath);
+void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath);
 
 void My_Ini_Analysis_GetString(LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
 
@@ -25,7 +25,6 @@ void RemoveCh(char *arrP);
 
 void Find_File_Section(char *arrP);
 
-void My_Ini_Analysis_GetSection(string targetSection, LPCTSTR filePath);
-
+void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex);
 
 #endif /*_MY_INI_ANALYSIS_H_*/
