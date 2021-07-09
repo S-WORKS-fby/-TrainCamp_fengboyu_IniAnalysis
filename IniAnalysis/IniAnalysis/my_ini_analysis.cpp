@@ -20,7 +20,6 @@ void Find_File_Section(char *arrP);
 
 void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex);
 
-void stringToInt(char *arrP, int *intP);
 
 /***********************************函数定义**************************************/
 /*************************************************************
@@ -106,18 +105,6 @@ char* FindEqual(char *arrP)
 }
 
 /*************************************************************
-Function    :stringToInt
-Description :将字符型数字转化为整形
-Input       :目标字符串指针,整形容器指针
-Output      :空
-Return      :整形数字
-Note        :
-*************************************************************/
-void stringToInt(char *arrP,int *intP)
-{
-}
-
-/*************************************************************
 Function    ::Find_File_Section
 Description :找出配置文件的节名
 Input       :字符数组指针
@@ -125,7 +112,7 @@ Output      :节名
 Return      :空
 Note        :
 *************************************************************/
-void Find_File_Section(char *arrP)
+void Find_File_Section(char *arrP,int *indexP)
 {
 	char *pos = arrP; //初始化遍历指针
 
@@ -135,6 +122,7 @@ void Find_File_Section(char *arrP)
 		{
 			if (*pos == ']') //如果能找到右括号，那么输出中间的节
 			{
+				*indexP = 1; //标志找到过节名
 				++arrP;
 				while (arrP != pos)
 				{
@@ -213,11 +201,12 @@ Output      :输出指定配置文件里的所有节名
 Return      :空
 Note        :
 *************************************************************/ 
-void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
+int My_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");	
 	static char iniLineBuffer[LINEMAXSIZE] = { 0 }; //初始化存储ini文件单行字符的字符数组
+	int outputIndex = 0; //初始化输出标志，0是未找到节名，1是找到节名
 	bool JFS = TRUE; //记录文件打开情况,初始化为TRUE（正常）
 
 	JFS = Judge_File_Status(iniFile); //判断文件打开状态
@@ -226,9 +215,11 @@ void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
 	{
 		RemoveCh(iniLineBuffer); //处理当前字符串，移除空格
-		Find_File_Section(iniLineBuffer); //找出处理后字符数组的节
+		Find_File_Section(iniLineBuffer,&outputIndex); //找出处理后字符数组的节
 	}
 	cout << endl;
+
+	return outputIndex;
 }
 
 /********************************************************************
@@ -239,7 +230,7 @@ Output      :输出指定配置文件里的指定节名下的所有键名键值
 Return      :空
 Note        :
 ********************************************************************/
-void My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
+int My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");
@@ -253,8 +244,8 @@ void My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 
-	cout << endl << "想要查找的节名：" << targetSection;
-	cout << endl << "标准化后的节名：" << TargetSection << endl;
+	//cout << endl << "想要查找的节名：" << targetSection;
+	//cout << endl << "标准化后的节名：" << TargetSection << endl;
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
 	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
@@ -265,11 +256,11 @@ void My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 		{
 			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
-			if (sectionIndex == 1)
-			{
-				cout << "找到匹配的节名:" << iniLineBuffer << endl;
-				cout << "要找的键名和键值是:" << endl;
-			}
+			//if (sectionIndex == 1)
+			//{
+			//	cout << "找到匹配的节名:" << iniLineBuffer << endl;
+			//	cout << "要找的键名和键值是:" << endl;
+			//}
 			continue;
 		}
 
@@ -287,6 +278,8 @@ void My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 		}
 	}/*while*/
 	cout << endl;
+
+	return outputIndex;
 }
 
 /*******************************************************************************
@@ -297,7 +290,7 @@ Output      :输出指定配置文件里的指定节名下指定键名的键值（string类型）
 Return      :空
 Note        :
 ********************************************************************************/
-void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
+int My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");
@@ -312,8 +305,8 @@ void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPC
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 
-	cout << endl << "想要查找的节名：" << targetSection;
-	cout << endl << "标准化后的节名：" << TargetSection << endl;
+	//cout << endl << "想要查找的节名：" << targetSection;
+	//cout << endl << "标准化后的节名：" << TargetSection << endl;
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
 	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
@@ -324,10 +317,10 @@ void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPC
 		{
 			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
-			if (sectionIndex == 1)
-			{
-				cout << "找到匹配的节名:" << iniLineBuffer << endl;
-			}
+			//if (sectionIndex == 1)
+			//{
+			//	cout << "找到匹配的节名:" << iniLineBuffer << endl;
+			//}
 			continue;
 		}
 
@@ -367,7 +360,7 @@ void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPC
 			}
 			stringBuffer[strlen(valueDefault)] = '\0';
 
-			cout << "找不到该键名！采取默认";
+			//cout << "找不到该键名！采取默认";
 			fclose(iniFile); //关闭文件
 			break; //结束文件查找
 		}
@@ -382,10 +375,12 @@ void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPC
 		}
 		stringBuffer[strlen(valueDefault)] = '\0';
 
-		cout << "找不到该键名！采取默认";
+		//cout << "找不到该键名！采取默认";
 		fclose(iniFile); //关闭文件
 	}
 	cout << endl;
+
+	return keyFindIndex;
 }
 
 /**************************************************************************
@@ -396,7 +391,7 @@ Output      :输出指定配置文件里的指定节名下指定键名的键值（int类型）
 Return      :空
 Note        :
 ***************************************************************************/
-void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *valueDefault, LPCTSTR filePath)
+int My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *valueDefault, LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");
@@ -413,8 +408,8 @@ void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *v
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 
-	cout << endl << "想要查找的节名：" << targetSection;
-	cout << endl << "标准化后的节名：" << TargetSection << endl;
+	//cout << endl << "想要查找的节名：" << targetSection;
+	//cout << endl << "标准化后的节名：" << TargetSection << endl;
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
 	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
@@ -425,10 +420,10 @@ void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *v
 		{
 			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
-			if (sectionIndex == 1)
-			{
-				cout << "找到匹配的节名:" << iniLineBuffer << endl;
-			}
+			//if (sectionIndex == 1)
+			//{
+			//	cout << "找到匹配的节名:" << iniLineBuffer << endl;
+			//}
 			continue;
 		}
 
@@ -454,7 +449,7 @@ void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *v
 		}
 		else
 		{
-			cout << "找不到该键名！采取默认";
+			//cout << "找不到该键名！采取默认";
 			fclose(iniFile); //关闭文件
 			break; //结束文件查找
 		}
@@ -462,8 +457,10 @@ void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *v
 
 	if (keyFindIndex == 0)
 	{
-		cout << "找不到该键名！采取默认";
+		//cout << "找不到该键名！采取默认";
 		fclose(iniFile); //关闭文件
 	}
 	cout << endl;
+
+	return keyFindIndex;
 }
