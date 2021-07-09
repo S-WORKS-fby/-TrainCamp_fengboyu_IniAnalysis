@@ -16,6 +16,7 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <typeinfo>
 
 /************************************宏常量****************************************/
 #define FILEPATH  "../../fengboyu.ini"  //定义文件路径为宏

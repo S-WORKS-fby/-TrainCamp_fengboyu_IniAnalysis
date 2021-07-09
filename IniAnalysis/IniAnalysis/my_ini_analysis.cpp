@@ -20,6 +20,8 @@ void Find_File_Section(char *arrP);
 
 void Judge_Section(char *secP, char *arrP, int *stIndex, int *opIndex);
 
+void stringToInt(char *arrP, int *intP);
+
 /***********************************函数定义**************************************/
 /*************************************************************
 Function    :Judge_File_Status
@@ -34,12 +36,12 @@ bool Judge_File_Status(FILE *file)
 	//判断文件是否成功打开
 	if (file)
 	{
-		cout << endl << "文件打开成功！" << endl << endl;
+		cout << endl << "文件打开成功！" << endl;
 		return TRUE;
 	}
 	else
 	{
-		cout << endl << "文件打开失败！" << endl << endl;
+		cout << endl << "文件打开失败！" << endl;
 		return FALSE;
 	}
 
@@ -103,6 +105,17 @@ char* FindEqual(char *arrP)
 	}
 }
 
+/*************************************************************
+Function    :stringToInt
+Description :将字符型数字转化为整形
+Input       :目标字符串指针,整形容器指针
+Output      :空
+Return      :整形数字
+Note        :
+*************************************************************/
+void stringToInt(char *arrP,int *intP)
+{
+}
 
 /*************************************************************
 Function    ::Find_File_Section
@@ -174,19 +187,19 @@ void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
 		strncpy(sectionBuffer, arrP, (pos - arrP + 1)); //截取
 		sectionBuffer[(pos - arrP + 1)] = '\0';
 
-		cout << "比对节名：" << secP << arrP << endl;
+		//cout << "比对节名：" << secP << arrP << endl;
 
 		if (!strcmp(sectionBuffer, secP)) //判断当前节和寻找节名是否相等
 		{
 			*stIndex = 1;
 			*opIndex = 1;
-			cout << "节名匹配" << endl << endl;
+			//cout << "节名匹配" << endl << endl;
 			break;
 		}
 		else
 		{
 			*stIndex = 0;
-			cout << "节名不匹配" << endl << endl;
+			//cout << "节名不匹配" << endl << endl;
 			break;
 		}
 	}/*while (*pos != '\n')*/
@@ -204,16 +217,16 @@ void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");	
-	static char intLineBuffer[LINEMAXSIZE] = { 0 }; //初始化存储ini文件单行字符的字符数组
+	static char iniLineBuffer[LINEMAXSIZE] = { 0 }; //初始化存储ini文件单行字符的字符数组
 	bool JFS = TRUE; //记录文件打开情况,初始化为TRUE（正常）
 
 	JFS = Judge_File_Status(iniFile); //判断文件打开状态
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
-	while (JFS && fgets(intLineBuffer, LINEMAXSIZE, iniFile))
+	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
 	{
-		RemoveCh(intLineBuffer); //处理当前字符串，移除空格
-		Find_File_Section(intLineBuffer); //找出处理后字符数组的节
+		RemoveCh(iniLineBuffer); //处理当前字符串，移除空格
+		Find_File_Section(iniLineBuffer); //找出处理后字符数组的节
 	}
 	cout << endl;
 }
@@ -226,11 +239,11 @@ Output      :输出指定配置文件里的指定节名下的所有键名键值
 Return      :空
 Note        :
 ********************************************************************/
-void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
+void My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");
-	char intLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
+	char iniLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
 	char TargetSection[LINEMAXSIZE]; //初始化存储转化成规范节名的指定节名
 	int sectionIndex = 2; //初始化寻找状态标志，2是默认值，1是节名匹配，0是不匹配
 	int outputIndex = 0; //初始化输出标志，0是默认值，0是之前未找到节名，1是之前已经匹配到节名
@@ -244,28 +257,28 @@ void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
 	cout << endl << "标准化后的节名：" << TargetSection << endl;
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
-	while (JFS && fgets(intLineBuffer, LINEMAXSIZE, iniFile))
+	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
 	{
-		RemoveCh(intLineBuffer); //处理当前字符串，移除空格
+		RemoveCh(iniLineBuffer); //处理当前字符串，移除空格
 
 		if (outputIndex != 1) //未匹配过字节，继续匹配
 		{
-			Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
 			if (sectionIndex == 1)
 			{
-				cout << "找到匹配的节名:" << intLineBuffer << endl;
+				cout << "找到匹配的节名:" << iniLineBuffer << endl;
 				cout << "要找的键名和键值是:" << endl;
 			}
 			continue;
 		}
 
 		//已经匹配过节名，目前是输出键名键值状态
-		Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+		Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
 		if (sectionIndex == 2) //当前不是节名
 		{
-			cout << intLineBuffer << endl;
+			cout << iniLineBuffer << endl;
 		}
 		else
 		{
@@ -276,19 +289,19 @@ void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath)
 	cout << endl;
 }
 
-/*************************************************************************
-Function    :My_Ini_Analysis_GetString自编解析函数--找出指定节指定键名的值
-Description :使用自编解析函数导出配置文件指定节中指定键名的键值
+/*******************************************************************************
+Function    :My_Ini_Analysis_GetString自编解析函数--找出指定节指定键名的字符串值
+Description :使用自编解析函数导出配置文件指定节中指定键名的键值（string类型）
 Input       :节名、键名、默认值、缓冲区、缓冲区大小、文件路径
-Output      :输出指定配置文件里的指定节名下指定键名的键值
+Output      :输出指定配置文件里的指定节名下指定键名的键值（string类型）
 Return      :空
 Note        :
-**************************************************************************/
-void My_Ini_Analysis_GetString(char *targetSection, char *targetKeyName, char *valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
+********************************************************************************/
+void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPCTSTR valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath)
 {
 	FILE *iniFile; //初始化文件指针
 	iniFile = fopen(filePath, "r");
-	char intLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
+	char iniLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
 	char TargetSection[LINEMAXSIZE]; //初始化存储转化成规范节名的指定节名
 	int sectionIndex = 2; //初始化寻找状态标志，2是默认值，1是节名匹配，0是不匹配
 	int outputIndex = 0; //初始化输出标志，0是默认值，0是之前未找到节名，1是之前已经匹配到节名
@@ -303,34 +316,35 @@ void My_Ini_Analysis_GetString(char *targetSection, char *targetKeyName, char *v
 	cout << endl << "标准化后的节名：" << TargetSection << endl;
 
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
-	while (JFS && fgets(intLineBuffer, LINEMAXSIZE, iniFile))
+	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
 	{
-		RemoveCh(intLineBuffer); //处理当前字符串，移除空格
+		RemoveCh(iniLineBuffer); //处理当前字符串，移除空格
 
 		if (outputIndex != 1) //未匹配过字节，继续匹配
 		{
-			Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
 			if (sectionIndex == 1)
 			{
-				cout << "找到匹配的节名:" << intLineBuffer << endl;
+				cout << "找到匹配的节名:" << iniLineBuffer << endl;
 			}
 			continue;
 		}
 
 		//已经匹配过节名，目前是输出键名键值状态
-		Judge_Section(TargetSection, intLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+		Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
 		if (sectionIndex == 2) //当前不是节名,查找键值
 		{
-			char *keyEqualP = FindEqual(intLineBuffer);  //得到当前键名键值型字符串中指向等号的指针
+			char *keyEqualP = FindEqual(iniLineBuffer);  //得到当前键名键值型字符串中指向等号的指针
 			
 			char KeyNameBuffer[LINEMAXSIZE]; //初始化存储当前键名的缓冲区
-			strncpy(KeyNameBuffer, intLineBuffer, (keyEqualP - intLineBuffer)); //将等号之前的键名字符串截取赋值到缓冲区
-			KeyNameBuffer[(keyEqualP - intLineBuffer)] = '\0';
+			strncpy(KeyNameBuffer, iniLineBuffer, (keyEqualP - iniLineBuffer)); //将等号之前的键名字符串截取赋值到缓冲区
+			KeyNameBuffer[(keyEqualP - iniLineBuffer)] = '\0'; //末尾添加结束符
 
 			if (!strcmp(KeyNameBuffer,targetKeyName))
 			{
+				keyFindIndex = 1; //标志已经找到目标键名
 				++keyEqualP;
 
 				//将等号后的字符赋值到键值缓存区
@@ -358,5 +372,98 @@ void My_Ini_Analysis_GetString(char *targetSection, char *targetKeyName, char *v
 			break; //结束文件查找
 		}
 	}/*while*/
+
+	if (keyFindIndex == 0)
+	{
+		//将默认字符串赋值到键值缓存区
+		for (int i = 0; i <= (strlen(valueDefault) - 1); i++)
+		{
+			stringBuffer[i] = valueDefault[i];
+		}
+		stringBuffer[strlen(valueDefault)] = '\0';
+
+		cout << "找不到该键名！采取默认";
+		fclose(iniFile); //关闭文件
+	}
+	cout << endl;
+}
+
+/**************************************************************************
+Function    :My_Ini_Analysis_GetInt自编解析函数--找出指定节指定键名的整形值
+Description :使用自编解析函数导出配置文件指定节中指定键名的键值（int类型）
+Input       :节名、键名、默认值、文件路径
+Output      :输出指定配置文件里的指定节名下指定键名的键值（int类型）
+Return      :空
+Note        :
+***************************************************************************/
+void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *valueDefault, LPCTSTR filePath)
+{
+	FILE *iniFile; //初始化文件指针
+	iniFile = fopen(filePath, "r");
+	char iniLineBuffer[LINEMAXSIZE]; //初始化存储ini文件单行字符的字符数组
+	char TargetSection[LINEMAXSIZE]; //初始化存储转化成规范节名的指定节名
+	char keyValueStringBuffer[LINEMAXSIZE]; //初始化存储找到的键值字符数组
+	//int keyValueIntBuffer = 0; //初始化存储转化成整形的数字
+	int sectionIndex = 2; //初始化寻找状态标志，2是默认值，1是节名匹配，0是不匹配
+	int outputIndex = 0; //初始化输出标志，0是默认值，0是之前未找到节名，1是之前已经匹配到节名
+	int keyFindIndex = 0; // 初始化键名查找状态标志，0是默认值，0是未找到键名，1是已找到
+
+	bool JFS = FALSE; //记录文件打开情况,初始化为FALSE（关闭）
+	JFS = Judge_File_Status(iniFile); //判断文件打开状态
+
+	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
+
+	cout << endl << "想要查找的节名：" << targetSection;
+	cout << endl << "标准化后的节名：" << TargetSection << endl;
+
+	//按行读取文件流中的字符串，读取不为空则进行后续操作
+	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
+	{
+		RemoveCh(iniLineBuffer); //处理当前字符串，移除空格
+
+		if (outputIndex != 1) //未匹配过字节，继续匹配
+		{
+			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+
+			if (sectionIndex == 1)
+			{
+				cout << "找到匹配的节名:" << iniLineBuffer << endl;
+			}
+			continue;
+		}
+
+		//已经匹配过节名，目前是输出键名键值状态
+		Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
+
+		if (sectionIndex == 2) //当前不是节名,查找键值
+		{
+			char *keyEqualP = FindEqual(iniLineBuffer);  //得到当前键名键值型字符串中指向等号的指针
+
+			char KeyNameBuffer[LINEMAXSIZE]; //初始化存储当前键名的缓冲区
+			strncpy(KeyNameBuffer, iniLineBuffer, (keyEqualP - iniLineBuffer)); //将等号之前的键名字符串截取赋值到缓冲区
+			KeyNameBuffer[(keyEqualP - iniLineBuffer)] = '\0'; //末尾添加结束符
+
+			if (!strcmp(KeyNameBuffer, targetKeyName))
+			{
+				keyFindIndex = 1; //标志已经找到目标键名
+				++keyEqualP;
+
+				*valueDefault = atoi(keyEqualP); //字符串转换成整形
+				break;
+			}
+		}
+		else
+		{
+			cout << "找不到该键名！采取默认";
+			fclose(iniFile); //关闭文件
+			break; //结束文件查找
+		}
+	}/*while*/
+
+	if (keyFindIndex == 0)
+	{
+		cout << "找不到该键名！采取默认";
+		fclose(iniFile); //关闭文件
+	}
 	cout << endl;
 }

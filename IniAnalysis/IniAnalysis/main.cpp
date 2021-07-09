@@ -17,6 +17,8 @@ int main()
 	LPTSTR strName = new char[20]; //初始化指向读取的键值指针
 	LPTSTR strClass = new char[20]; //初始化指向读取的键值指针
 	LPTSTR strCompany = new char[LINEMAXSIZE]; //初始化指向读取公司键名缓冲区的指针
+	int intSalary = 0; //初始化指向读取薪水键名默认值的指针
+	int intByfriend = 0; //初始化指向读取男朋友键名默认值的指针
 
 	int studentAge = 0; //初始化学生年龄
 	int *age = &studentAge; //初始化指向学生年龄指针
@@ -61,9 +63,16 @@ int main()
 	//My_Ini_Analysis_GetSection("[hobbies", filePath);
 
 	/*************************读取指定配置文件中指定节的指定键名的键值*********************/
-	cout << endl << "/*************************读取指定配置文件中指定节的指定键名的键值*********************/";
-	My_Ini_Analysis_GetString("study", "mama", "XinJe", strCompany, LINEMAXSIZE, filePath);
-	cout << "键值为：" << strCompany << endl;
+	//cout << endl << "/*************************读取指定配置文件中指定节的指定键名的键值*********************/";
+	//My_Ini_Analysis_GetString("job&work", "company", "XinJe", strCompany, LINEMAXSIZE, filePath);
+	//cout << "键值为：" << strCompany << endl;
+	//My_Ini_Analysis_GetString("job&work", "compa", "XinJe", strCompany, LINEMAXSIZE, filePath);
+	//cout << "键值为：" << strCompany << endl;
+	My_Ini_Analysis_GetInt("job&work", "salary", &intSalary, filePath);
+	cout << "键值为：" << intSalary << endl;
+	My_Ini_Analysis_GetInt("grilfriend=cuifang", "boyfriend", &intByfriend, filePath);
+	cout << "键值为：" << intByfriend << endl;
+
 
 
 	delete strName;

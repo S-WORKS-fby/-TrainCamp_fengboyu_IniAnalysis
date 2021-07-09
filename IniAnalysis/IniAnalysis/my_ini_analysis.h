@@ -13,10 +13,10 @@
 /************************************** 全局函数声明 *************************************/
 void My_Ini_Analysis_GetSectionNames(LPCTSTR filePath);
 
-void My_Ini_Analysis_GetSection(char *targetSection, LPCTSTR filePath);
+void My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath);
 
-void My_Ini_Analysis_GetString(char *targetSection, char *targetKeyName, char *valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
+void My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPCTSTR  valueDefault, LPTSTR stringBuffer, DWORD nSize, LPCTSTR filePath);
 
-void My_Ini_Analysis_GetInt(char *sectionName, char *keyName, int valueDefault, int *intBuffer, LPCTSTR filePath);
+void My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *valueDefault, LPCTSTR filePath);
 
 #endif /*_MY_INI_ANALYSIS_H_*/
