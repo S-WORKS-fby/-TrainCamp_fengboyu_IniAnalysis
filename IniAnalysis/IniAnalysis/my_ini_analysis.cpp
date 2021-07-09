@@ -166,7 +166,6 @@ void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
 		if (*opIndex != 0)//若之前已经找到节名，再次碰到节名则停止输出
 		{
 			*stIndex = 0;
-			*opIndex = 0;
 			cout << endl;
 			break;
 		}
@@ -177,7 +176,7 @@ void Judge_Section(char *secP, char *arrP, int *stIndex,int *opIndex)
 
 		//cout << "比对节名：" << secP << arrP << endl;
 
-		if (!strcmp(sectionBuffer, secP)) //判断当前节和寻找节名是否相等
+		if (!strcmp(sectionBuffer, secP)) //判断当前节和寻找节名是否相等,若相等则进入
 		{
 			*stIndex = 1;
 			*opIndex = 1;
@@ -211,6 +210,11 @@ int My_Ini_Analysis_GetSectionNames(LPCTSTR filePath)
 
 	JFS = Judge_File_Status(iniFile); //判断文件打开状态
 
+	if (!JFS)
+	{
+		return 0;
+	}
+
 	//按行读取文件流中的字符串，读取不为空则进行后续操作
 	while (JFS && fgets(iniLineBuffer, LINEMAXSIZE, iniFile))
 	{
@@ -241,6 +245,10 @@ int My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 
 	bool JFS = TRUE; //记录文件打开情况,初始化为TRUE（正常）
 	JFS = Judge_File_Status(iniFile); //判断文件打开状态
+	if (!JFS)
+	{
+		return 0;
+	}
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 
@@ -256,11 +264,11 @@ int My_Ini_Analysis_GetSection(LPCTSTR targetSection, LPCTSTR filePath)
 		{
 			Judge_Section(TargetSection, iniLineBuffer, &sectionIndex, &outputIndex); //判断当前是不是节名
 
-			//if (sectionIndex == 1)
-			//{
-			//	cout << "找到匹配的节名:" << iniLineBuffer << endl;
-			//	cout << "要找的键名和键值是:" << endl;
-			//}
+			if (sectionIndex == 1)
+			{
+				//cout << "找到匹配的节名:" << iniLineBuffer << endl;
+				//cout << "要找的键名和键值是:" << endl;
+			}
 			continue;
 		}
 
@@ -302,6 +310,10 @@ int My_Ini_Analysis_GetString(LPCTSTR targetSection, LPCTSTR targetKeyName, LPCT
 
 	bool JFS = FALSE; //记录文件打开情况,初始化为FALSE（关闭）
 	JFS = Judge_File_Status(iniFile); //判断文件打开状态
+	if (!JFS)
+	{
+		return 0;
+	}
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 
@@ -405,6 +417,10 @@ int My_Ini_Analysis_GetInt(LPCTSTR targetSection, LPCTSTR targetKeyName, int *va
 
 	bool JFS = FALSE; //记录文件打开情况,初始化为FALSE（关闭）
 	JFS = Judge_File_Status(iniFile); //判断文件打开状态
+	if (!JFS)
+	{
+		return 0;
+	}
 
 	sprintf(TargetSection, "[%s]", targetSection); //将添加括号的目标节名赋值给规范节名
 

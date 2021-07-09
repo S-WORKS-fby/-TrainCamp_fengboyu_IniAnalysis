@@ -61,12 +61,13 @@ int main()
 	/*************************读取指定配置文件中指定节的所有键名键值*********************/
 	cout << endl << "/*************************读取指定配置文件中指定节的所有键名键值*********************/";
 	My_Ini_Analysis_GetSection("[hobbies", filePath);
-
 	/*************************读取指定配置文件中指定节的指定键名的键值*********************/
 	cout << endl << "/*************************读取指定配置文件中指定节的指定键名的键值*********************/";
-	My_Ini_Analysis_GetString("job&work", "company", "XinJe", strCompany, LINEMAXSIZE, filePath);
+	int a = My_Ini_Analysis_GetString("job&work", "company", "XinJe", strCompany, LINEMAXSIZE, filePath);
+	cout << "a" << a << endl;
 	cout << "键值为：" << strCompany << endl;
-	My_Ini_Analysis_GetString("job&work", "compa", "XinJe", strCompany, LINEMAXSIZE, filePath);
+	int b = My_Ini_Analysis_GetString("job&work", "compa", "XinJe", strCompany, LINEMAXSIZE, filePath);
+	cout << "b" << b << endl;
 	cout << "键值为：" << strCompany << endl;
 	My_Ini_Analysis_GetInt("job&work", "salary", &intSalary, filePath);
 	cout << "键值为：" << intSalary << endl;
